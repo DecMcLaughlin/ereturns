@@ -1,0 +1,49 @@
+
+.p-menubar{
+  padding: 0 !important;
+}
+/* Style for the active menu item link */
+.p-menubar .p-menubar-item-link-active {
+  background-color:rgba(1, 114, 166, 1) !important; /* Bootstrap primary blue */
+  color: #ffffff !important;
+
+  span {
+    padding: 5px;
+  }
+}
+
+/* Ensure icons and labels inside the active link are also white */
+.p-menubar .p-menubar-item-link-active .p-menubar-item-icon,
+.p-menubar .p-menubar-item-link-active .p-menubar-item-label {
+  color: #ffffff !important;
+padding: 0;
+}
+
+.p-datatable-sort-icon{
+  color: #ffffff !important;
+}
+.p-button-secondary {
+  background: #f1f5f9 !important;
+  border: 1px solid #f1f5f9 !important;
+  color: #475569 !important;
+
+}
+p-columnfilterformelement {
+  width: 100% !important;
+}
+p-columnfilterformelement > p-select {
+  width: 100% !important;
+}
+p-columnfilterformelement > input {
+  width: 100% !important;
+}
+
+.p-tag {
+  background-color: inherit !important;
+  color: #475569 !important;
+  border: 1px solid #f1f5f9 !important;
+}
+
+.p-button {
+  @apply bg-primary !important;
+}

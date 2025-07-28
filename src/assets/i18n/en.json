@@ -1,0 +1,13 @@
+{
+  "header": {
+    "gateway_home": "Gateway Home",
+    "logout": "Logout",
+    "separator": "|"
+  },
+  "footer": {
+    "almac_group": "Almac Group",
+    "terms": "Gateway Terms & Conditions",
+    "privacy": "Privacy Policy",
+    "separator": "|"
+  }
+}

@@ -1,0 +1,16 @@
+<main class="flex flex-col h-screen justify-between">
+
+  @if (store.isLoading?.(); as loading) {
+    <div class="loading-overlay">
+      <p-progressSpinner/>
+    </div>
+  }
+
+  <app-header></app-header>
+  <app-nav></app-nav>
+  <div class="grow p-[1rem] bg-[#d0d5db] ">
+
+    <router-outlet></router-outlet>
+  </div>
+  <app-footer class="h-10"></app-footer>
+</main>

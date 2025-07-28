@@ -1,0 +1,10 @@
+<footer *transloco="let t; prefix: 'footer'" >
+  <hr/>
+  <nav class="flex space-x-4 justify-center">
+    <span>&copy; {{ currentYear }} {{ t('almac_group') }}</span>
+    <span>{{ t('separator') }}</span>
+    <a  href="https://www.almacgroup.com/privacy-cookie-policy/" target="_blank" class="text-gray-600 hover:text-gray-900">{{ t('privacy') }}</a>
+    <span>{{ t('separator') }}</span>
+    <a href="{{gatewayTOCUrl}}" target="_blank" class="text-gray-600 hover:text-gray-900">{{ t('terms') }}</a>
+  </nav>
+</footer>

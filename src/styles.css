@@ -1,0 +1,77 @@
+/* You can add global styles to this file, and also import other style files */
+@import "primeicons/primeicons.css";
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+
+::-webkit-scrollbar-track {
+  -webkit-box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.1);
+  background-color: #f5f5f5;
+}
+
+::-webkit-scrollbar {
+  width: 7px;
+  height: 5px;
+  background-color: #f5f5f5;
+}
+
+::-webkit-scrollbar-thumb {
+  background-color: rgba(255, 77, 77, .7);
+}
+
+* {
+  margin: 0;
+}
+
+*,
+*::after,
+*::before {
+  box-sizing: border-box;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  list-style: none;
+}
+
+body {
+  font-family: "latoregular", "Trebuchet MS", Arial, Helvetica, sans-serif;
+  color: #637383;
+  overflow-y: hidden;
+}
+
+html {
+  font-size: 72.5%;
+}
+
+h1 {
+  font-weight: normal;
+  font-size:2.2rem;
+}
+
+h2 {
+  font-size: 1.9rem;
+}
+
+h3 {
+  font-size: 1.4rem;
+  white-space: pre-line;
+}
+
+h4 {
+  font-size: 1.2rem;
+}
+
+a {
+  cursor: pointer;
+  text-decoration: none;
+  color:  #637383;
+}
+
+a,
+p,
+span,
+input,
+textarea,
+li{
+  font-size: 1.4rem;
+}

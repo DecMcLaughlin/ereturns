@@ -1,0 +1,84 @@
+
+
+<p-table
+  [value]="data()"
+  [columns]="columns()"
+  [paginator]="true"
+  [rows]="rows"
+  [rowsPerPageOptions]="[5, 10, 20]"
+  [showCurrentPageReport]="true"
+  currentPageReportTemplate="Showing {first} to {last} of {totalRecords} entries"
+>
+<!-- Smart Table Component -->
+  <ng-template pTemplate="header" let-columns>
+    <tr class="text-[1.4rem]">
+      @for (col of columns; track col.field) {
+        <th pSortableColumn="{{ col.field }}" class="text-left !bg-[#0172A6FF] !text-white">
+          <div class="flex flex-col gap-1 w-full">
+            <!-- Header and Sort Icon -->
+            <div class="flex items-center gap-2">
+              <span>{{ col.header }}</span>
+              <p-sortIcon field="{{ col.field }}"></p-sortIcon>
+            </div>
+            <ng-container
+              *ngTemplateOutlet="getTemplate(col.type); context: { $implicit: data(), col: col }">
+            </ng-container>
+          </div>
+        </th>
+      }
+    </tr>
+  </ng-template>
+
+
+
+  <ng-template pTemplate="body" let-rowData let-columns="columns">
+    <tr class="hover:bg-gray-50 text-[1.4rem]">
+      @for (col of columns; track col.field) {
+        <td class="px-4 py-2 text-gray-800">{{ rowData[col.field] }}</td>
+      }
+    </tr>
+  </ng-template>
+
+  <ng-template #textHeader let-col="col">
+    <p-columnFilter
+      type="text"
+      [field]="col.field"
+      placeholder="Type to search"
+      ariaLabel="Filter {{ col.header }}"
+      [showMenu]="false"
+      (click)="$event.stopPropagation()"
+    ></p-columnFilter>
+  </ng-template>
+
+  <ng-template #selectHeader let-col="col">
+    <p-columnFilter [field]="col.field" matchMode="equals" [showMenu]="false">
+      <ng-template pTemplate="filter" let-filter="filterCallback">
+        <p-select
+          [options]="getUniquePropertyOptions(col.field)"
+          placeholder="Any"
+          (onChange)="filter($event.value)"
+          optionLabel="label"
+          optionValue="value"
+          [showClear]="true"
+          (click)="$event.stopPropagation()"
+        >
+          <ng-template pTemplate="item" let-option>
+            <p-tag [value]="option.label"></p-tag>
+          </ng-template>
+        </p-select>
+      </ng-template>
+    </p-columnFilter>
+  </ng-template>
+
+  <ng-template #dateHeader let-col="col">
+    <p-columnFilter
+      type="date"
+      [field]="col.field"
+      [showMenu]="false"
+      placeholder="Pick a date"
+      (click)="$event.stopPropagation()"
+    ></p-columnFilter>
+  </ng-template>
+
+</p-table>
+

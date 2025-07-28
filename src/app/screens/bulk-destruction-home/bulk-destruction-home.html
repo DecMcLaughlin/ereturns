@@ -1,0 +1,11 @@
+
+
+<app-personalise
+  [columns]="store.tableColumns"
+  (columnsChanged)="store.updateTableColumns($event)"
+/>
+
+<app-smart-table
+  [data]="tableData"
+  [columns]="tableColumns"
+/>
