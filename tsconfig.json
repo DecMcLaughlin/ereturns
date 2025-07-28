@@ -5,6 +5,7 @@
   "compilerOptions": {
 
     "baseUrl": "src",
+    "esModuleInterop": true,
     "paths": {
       "src/*": ["./*"]
     },
