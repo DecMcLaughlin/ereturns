@@ -1,4 +1,4 @@
-import {Component, computed, EventEmitter, Input, OnInit, Output, Signal} from '@angular/core';
+import {Component, EventEmitter, Input, OnInit, Output, Signal} from '@angular/core';
 import {ButtonDirective} from 'primeng/button';
 import {FormsModule} from '@angular/forms';
 import {TableColumn} from 'src/app/models/tableColumn';

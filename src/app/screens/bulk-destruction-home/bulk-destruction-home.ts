@@ -1,4 +1,4 @@
-import {Component, computed, effect, inject, OnInit} from '@angular/core';
+import {Component, computed, effect, inject} from '@angular/core';
 import {BulkDestructionStore} from 'src/app/store/bulk.destruction.store';
 import {SmartTableComponent} from 'src/app/components/smart-table/smart-table';
 import {Personalise} from 'src/app/components/personalise/personalise';
