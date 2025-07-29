@@ -1,7 +1,7 @@
 import {
   ApplicationConfig,
   provideZoneChangeDetection,
-  isDevMode
+  isDevMode, importProvidersFrom
 } from '@angular/core';
 import {provideRouter} from '@angular/router';
 import {provideAnimationsAsync} from '@angular/platform-browser/animations/async';
@@ -13,8 +13,14 @@ import {AuthInterceptor} from 'src/app/interceptors/auth.interceptor';
 import { providePrimeNG } from 'primeng/config';
 import Aura from '@primeng/themes/material';
 
+import { DragDropModule } from 'primeng/dragdrop';
+
 export const appConfig: ApplicationConfig = {
   providers: [
+
+    importProvidersFrom(
+      DragDropModule
+    ),
     provideZoneChangeDetection({eventCoalescing: true}),
     provideRouter(routes),
     provideAnimationsAsync(),

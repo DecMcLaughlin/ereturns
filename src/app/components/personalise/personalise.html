@@ -17,7 +17,7 @@
 </div>
 
 @if (showPersonalize) {
-  <div class="p-4 bg-white mb-4">
+  <div class="p-4 bg-white">
     <h2 class="text-xl font-semibold mb-2">Site preferences:</h2>
     <p class="mb-4">Below are the sites available.</p>
     <p class="mb-4">
@@ -26,7 +26,7 @@
 
     <!-- Flex row container for all sites -->
     <div class="flex gap-4 bg-white p-4 rounded">
-      @for (site of sites;  track $index) {
+      @for (site of sites; track $index) {
         <div class="flex items-center gap-4 bg-[#01a6884d] p-4 rounded shadow flex-1">
           @if (!site.default) {
             <!-- Slightly larger checkbox -->
@@ -62,43 +62,76 @@
       }
     </div>
   </div>
+
   <hr/>
-  <div class="p-4 bg-white mb-4">
+  <div class="p-4 bg-white">
     <h2 class="text-xl font-semibold mb-2">Current Filtered Settings:</h2>
     <p class="mb-4">Below are the column(s) column filter(s) set as your preference.</p>
     <p class="mb-4">
       If you wish to re-order columns please drag and drop using the '...'
     </p>
+  </div>
 
     <!-- Flex row container for all sites -->
-    <div  cdkDropList [cdkDropListData]="sortedColumns" (cdkDropListDropped)="drop($event)" class="flex gap-4 bg-white p-4 rounded">
-      @for (col of sortedColumns; track $index) {
-        <div cdkDrag class="flex flex-col items-start gap-4 bg-[#01a6884d] p-4 rounded shadow flex-1">
-         <div class="flex items-center gap-4 w-full">
-          @if (col.canBeHidden) {
-            <!-- Slightly larger checkbox -->
-            <input
-              type="checkbox"
-              [(ngModel)]="col.isVisible"
-              class="form-checkbox h-6 w-6 text-[#0172A6]"
-            />
-          }
 
-          <!-- Site Name -->
-          <span class="flex-1 font-medium text-base">{{col.order }}.{{ col.header }}</span>
-         </div>
+    <div class="grid grid-cols-6 gap-4 bg-white mb-2.5 p-8">
+      @for (col of cols(); track col.order) {
+        <div
+          pDraggable
+          pDroppable
+          [pDroppableDisabled]="draggedColumn === col"
+          (onDragStart)="dragStartCols(col)"
+          (onDragEnd)="dragEndCols()"
+          (onDrop)="shuffleCols($event, col)"
+          class="w-full p-2 rounded bg-opacity-30"
+          [ngClass]="{
+        'bg-[#F3BBBB]': col.hidden,
+        'bg-[#01a6884d]': !col.hidden
+      }"
+        >
+          <div class="mb-2 flex items-center justify-between">
+            <div class="flex w-[90%] items-center gap-2">
+              @if (col.userHideable) {
+                <input
+                  type="checkbox"
+                  class="mr-2 cursor-pointer w-5 h-5"
+                  [checked]="!col.hidden"
+                  (change)="toggleColumn(col)"
+                />
+              }
+              <h3 class="whitespace-nowrap font-semibold">
+                {{ col.order }}. {{ col.header }}
+              </h3>
+            </div>
+            @if (!col.hidden) {
+              <i class="pi pi-ellipsis-h cursor-grab"></i>
+            }
 
-            <!-- Slightly larger label -->
-            <span
-              class="px-4 py-2 rounded text-white text-base"
-              style="background-color: #01a688"
-            >
-              **Showing All**
-            </span>
 
+    </div>
+          <h4
+            class="whitespace-nowrap overflow-hidden text-ellipsis inline-block text-white px-2 rounded leading-8 break-words"
+            [ngClass]="{
+          'bg-teal-600': col.prepopulatedFilter === null,
+          'bg-blue-700': col.prepopulatedFilter != null
+        }"
+            pTooltip="{{
+          col.prepopulatedFilter
+            ? col.prepopulatedFilter.value.toString().replaceAll(',', ', ')
+            : null
+        }}"
+          >
+            {{
+              col.prepopulatedFilter && !col.dateSearch
+                ? col.prepopulatedFilter.value.toString().replaceAll(',', ', ')
+                : col.prepopulatedFilter && col.dateSearch
+                  ? col.prepopulatedFilter.value.toString().replace(',', ' - ')
+                  : '** Showing All **'
+            }}
+          </h4>
         </div>
       }
     </div>
-  </div>
+
 }
 

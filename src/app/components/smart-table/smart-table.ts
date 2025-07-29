@@ -5,15 +5,9 @@ import {FormsModule} from '@angular/forms';
 import {MultiSelectModule } from 'primeng/multiselect';
 import {Tag} from 'primeng/tag';
 import {Select} from 'primeng/select';
+import {TableColumn} from 'src/app/models/tableColumn';
 
-export interface TableColumn<T = any> {
-  order: number;
-  field: keyof T | string;
-  header: string;
-  type?: string;
-  canBeHidden?: boolean;
-  isVisible?: boolean;
-}
+
 
 @Component({
   selector: 'app-smart-table',
@@ -56,9 +50,4 @@ rows= 15
       value: value
     }));
   }
-
-
-
-
-
 }

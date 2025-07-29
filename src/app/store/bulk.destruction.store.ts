@@ -4,12 +4,12 @@ import {Dataservice} from 'src/app/services/dataservice';
 import {rxMethod} from '@ngrx/signals/rxjs-interop';
 import {catchError, of, tap} from 'rxjs';
 
-import { Paginator } from '../models/paginator';
-import {TableColumn} from 'src/app/components/smart-table/smart-table';
+import {Paginator} from '../models/paginator';
+import {TableColumn} from 'src/app/models/tableColumn';
 
 
 type BulkDestructionState = {
-  params:{
+  params: {
     paginator: Paginator
     organizationId: number,
     includeApprovedCancelledClosed: boolean
@@ -19,26 +19,83 @@ type BulkDestructionState = {
 };
 
 const initialState: BulkDestructionState = {
-  params :{
-    paginator:  {
+  params: {
+    paginator: {
       from: 1,
       to: 15
     },
     organizationId: 101,
     includeApprovedCancelledClosed: false
-  } ,
-  tableColumns:[
-    { order: 1, field: 'drnNumber', header: 'BDRN No.', canBeHidden: true, isVisible: true },
-    { order: 2, field: 'creationDate', header: 'Date raised', canBeHidden: true, type:'date', isVisible: true},
-    { order: 3, field: 'customer', header:'Customer', canBeHidden: true, isVisible: true },
-    { order: 4, field: 'partialLots', header: 'Partial Lots', canBeHidden: true, type: 'select', isVisible: true},
-    { order: 5, field: 'status', header: 'Status', canBeHidden: true,  type: 'select', isVisible: true },
-    { order: 6, field: 'raisedBy', header: 'Raised By', canBeHidden: true, isVisible: true},
-    { order: 7,  field: 'customerApprover', header: 'Customer Approver', canBeHidden: true, isVisible: true },
-    { order: 8, field: 'almacApprover', header: 'Almac Approver', canBeHidden: true, isVisible: true }
+  },
 
-  ],
-  tableData:[]
+  tableColumns: [{
+    "order": 1,
+    "field": "drnNumber",
+    "header": "DRN No.",
+    "filterable": true,
+    "prepopulatedFilter": null,
+    "hidden": false,
+    "userHideable": false
+  }, {
+    "order": 2,
+    "field": "creationDate",
+    "header": "Date Raised",
+    "filterable": true,
+    "prepopulatedFilter": null,
+    "hidden": false,
+    "userHideable": true
+  }, {
+    "order": 3,
+    "field": "customer",
+    "header": "Customer",
+    "filterable": true,
+    "prepopulatedFilter": null,
+    "hidden": false,
+    "userHideable": true
+  }, {
+    "order": 4,
+    "field": "partialLots",
+    "header": "Partial Lots",
+    "filterable": true,
+    "prepopulatedFilter": null,
+    "hidden": false,
+    "userHideable": true
+  }, {
+    "order": 5,
+    "field": "status",
+    "header": "Status",
+    "filterable": true,
+    "prepopulatedFilter": null,
+    "hidden": false,
+    "userHideable": false
+  }, {
+    "order": 6,
+    "field": "raisedBy",
+    "header": "Raised By",
+    "filterable": true,
+    "prepopulatedFilter": null,
+    "hidden": false,
+    "userHideable": true
+  }, {
+    "order": 7,
+    "field": "customerApprover",
+    "header": "Customer Approver",
+    "filterable": true,
+    "prepopulatedFilter": null,
+    "hidden": true,
+    "userHideable": true
+  }, {
+    "order": 8,
+    "field": "almacApprover",
+    "header": "Almac Approver",
+    "filterable": true,
+    "prepopulatedFilter": null,
+    "hidden": true,
+    "userHideable": true
+  }],
+
+
+  tableData: []
 };
 
 export const BulkDestructionStore = signalStore(
@@ -51,7 +108,7 @@ export const BulkDestructionStore = signalStore(
           store.params.paginator()).pipe(
           tap((ro: any) => {
             const data = ro.data.bulkDestructionRequests;
-              patchState(store, {tableData: data});
+            patchState(store, {tableData: data});
 
           }),
           catchError((err) => {
@@ -62,7 +119,8 @@ export const BulkDestructionStore = signalStore(
     ),
 
     updateTableColumns(updated: TableColumn[]) {
-      patchState(store, { tableColumns: updated });
+      patchState(store, {tableColumns: updated});
+      console.log("Updated table columns:", updated);
       // TODO: persist to backend here if needed
     }
 

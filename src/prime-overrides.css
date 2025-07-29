@@ -45,5 +45,11 @@ p-columnfilterformelement > input {
 }
 
 .p-button {
-  @apply bg-primary !important;
+  background-color:rgba(1, 114, 166, 1) !important;
+  border: 1px solid #f1f5f9 !important;
+  color: #ffffff !important;
+}
+
+.p-datatable{
+  overflow: auto !important;
 }
