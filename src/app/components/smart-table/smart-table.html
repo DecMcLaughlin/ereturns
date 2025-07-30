@@ -1,40 +1,41 @@
-
-
 <p-table
-  [value]="data()"
-  [columns]="columns()"
+  [value]="visibleData()"
+  [columns]="visibleColumns()"
   [paginator]="true"
   [rows]="rows"
   [rowsPerPageOptions]="[5, 10, 20]"
   [showCurrentPageReport]="true"
   currentPageReportTemplate="Showing {first} to {last} of {totalRecords} entries"
 >
-<!-- Smart Table Component -->
+  <!-- Smart Table Component -->
   <ng-template pTemplate="header" let-columns>
     <tr class="text-[1.4rem]">
       @for (col of columns; track col.field) {
-        <th pSortableColumn="{{ col.field }}" class="text-left !bg-[#0172A6FF] !text-white">
-          <div class="flex flex-col gap-1 w-full">
-            <!-- Header and Sort Icon -->
-            <div class="flex items-center gap-2">
-              <span>{{ col.header }}</span>
-              <p-sortIcon field="{{ col.field }}"></p-sortIcon>
+        @if (!col.hidden) {
+          <th pSortableColumn="{{ col.field }}" class="text-left !bg-[#0172A6FF] !text-white">
+            <div class="flex flex-col gap-1 w-full">
+              <!-- Header and Sort Icon -->
+              <div class="flex items-center gap-2">
+                <span>{{ col.header }}</span>
+                <p-sortIcon field="{{ col.field }}"></p-sortIcon>
+              </div>
+              <ng-container
+                *ngTemplateOutlet="getTemplate(col.type); context: { $implicit: data(), col: col }">
+              </ng-container>
             </div>
-            <ng-container
-              *ngTemplateOutlet="getTemplate(col.type); context: { $implicit: data(), col: col }">
-            </ng-container>
-          </div>
-        </th>
+          </th>
+        }
       }
     </tr>
   </ng-template>
 
 
-
   <ng-template pTemplate="body" let-rowData let-columns="columns">
     <tr class="hover:bg-gray-50 text-[1.4rem]">
       @for (col of columns; track col.field) {
+        @if (!col.hidden) {
         <td class="px-4 py-2 text-gray-800">{{ rowData[col.field] }}</td>
+        }
       }
     </tr>
   </ng-template>

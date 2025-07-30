@@ -3,29 +3,50 @@ import {BulkDestructionStore} from 'src/app/store/bulk.destruction.store';
 import {SmartTableComponent} from 'src/app/components/smart-table/smart-table';
 import {Personalise} from 'src/app/components/personalise/personalise';
 
+import {SelectButton} from 'primeng/selectbutton';
+import {FormsModule} from '@angular/forms';
+import {TableColumn} from 'src/app/models/tableColumn';
+import {Site} from 'src/app/models/site';
+
 @Component({
   selector: 'app-bulk-destruction-home',
   imports: [
     SmartTableComponent,
-    Personalise
+    Personalise,
+    SelectButton,
+    FormsModule
   ],
   templateUrl: './bulk-destruction-home.html',
   styleUrl: './bulk-destruction-home.css',
-  providers:[BulkDestructionStore]
+  providers: [BulkDestructionStore]
 })
 export class BulkDestructionHome {
   store = inject(BulkDestructionStore);
   readonly tableData = computed(() => this.store.tableData?.() ?? []);
   readonly tableColumns = computed(() => this.store.tableColumns?.() ?? []);
+  readonly sites = computed(() => this.store.sites?.() ?? []);
+  readonly selectedSite = computed(() =>
+    this.sites().find(site => site.default)
+  );
+  readonly visibleSites = computed(() =>
+    this.sites().filter(site => !site.hidden)
+  );
+
 
 
   constructor() {
-    effect(() => {
-      const data = this.tableColumns();
-      if (data.length > 0) {
-        console.log('Table data loaded:', data);
-      }
-    });
+  effect(() => {
+    console.log('Parent Columns changed:', this.tableColumns());
+  });
+}
+
+  updatePersonalisation(event: {
+    tableColumns: TableColumn[],
+    sites: Site[],
+    defaultSite?: Site
+  }) {
+    console.log('Received personalisation update', event);
+    this.store.updatePersonalisation(event);
   }
 
 }

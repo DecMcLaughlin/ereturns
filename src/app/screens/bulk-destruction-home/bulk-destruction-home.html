@@ -1,8 +1,9 @@
 <app-personalise
   [cols]="tableColumns"
-  (columnsChanged)="store.updateTableColumns($event)"
+  [sites]="sites"
+  (personalisationChanged)="updatePersonalisation($event)"
 />
-
+<p-selectButton [options]="visibleSites()" [ngModel]="selectedSite()" optionLabel="name"></p-selectButton>
 <app-smart-table
   [data]="tableData"
   [columns]="tableColumns"

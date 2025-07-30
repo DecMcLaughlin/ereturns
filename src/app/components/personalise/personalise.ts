@@ -5,6 +5,7 @@ import {TableColumn} from 'src/app/models/tableColumn';
 import {Draggable, Droppable} from 'primeng/dragdrop';
 import {Tooltip} from 'primeng/tooltip';
 import {NgClass} from '@angular/common';
+import {Site} from 'src/app/models/site';
 
 @Component({
   selector: 'app-personalise',
@@ -19,81 +20,115 @@ import {NgClass} from '@angular/common';
   templateUrl: './personalise.html',
   styleUrl: './personalise.css'
 })
-export class Personalise implements OnInit {
+export class Personalise {
 
   @Input({required: true}) cols!: Signal<TableColumn[]>;
-  @Output() columnsChanged = new EventEmitter<TableColumn[]>();
+  @Input({required: true}) sites!: Signal<Site[]>;
+  @Output() personalisationChanged = new EventEmitter<{
+    tableColumns: TableColumn[],
+    sites: Site[],
+    defaultSite?: Site
+  }>();
 
-  // cols: any[] = [];
   draggedColumn: any = null;
+  showPersonalize: boolean = false;
 
+  emitPersonalisationUpdate() {
+    // Clone the current state
+    const updatedSites = this.sites().map(site => ({ ...site }));
+    const updatedCols = this.cols().map(col => ({ ...col }));
 
-  ngOnInit(): void {
+    // Apply any mutations here (e.g., based on UI state)
+    const defaultSite = updatedSites.find(s => s.default);
 
-
+    // Emit the updated state
+    this.personalisationChanged.emit({
+      tableColumns: updatedCols,
+      sites: updatedSites,
+      defaultSite
+    });
   }
 
-  showPersonalize: boolean = false;
-  sites: { name: string; default: boolean; selected: boolean }[] = [
-    {name: 'Craigavon', default: true, selected: false},
-    {name: 'Dundalk', default: false, selected: true},
-    {name: 'Durham', default: false, selected: true},
-    {name: 'Souderton', default: false, selected: true},
-    {name: 'Singapore', default: false, selected: true}
-  ];
-
-
-  toggleColumns() {
+  showPersonronalize() {
     this.showPersonalize = !this.showPersonalize;
   }
 
-  makeDefault(selectedSite: { name: string; default: boolean }) {
-    this.sites.forEach(site => (site.default = false));
-    selectedSite.default = true;
+
+  makeDefault(selectedSite: Site) {
+    const updatedSites = this.sites().map(site => ({
+      ...site,
+      default: site.value === selectedSite.value,
+      hidden: site.hidden
+    }));
+
+    this.personalisationChanged.emit({
+      tableColumns: this.cols().map(col => ({ ...col })),
+      sites: updatedSites,
+      defaultSite: selectedSite
+    });
+  }
+
+  toggleColumnVisibility(col: TableColumn) {
+    const updatedCols = this.cols().map(c => ({ ...c }));
+
+    const target = updatedCols.find(c => c.field === col.field);
+    if (target) {
+      target.hidden = !target.hidden;
+    }
+
+    this.personalisationChanged.emit({
+      tableColumns: updatedCols,
+      sites: this.sites().map(site => ({ ...site })),
+      defaultSite: this.sites().find(s => s.default)
+    });
   }
 
 
-// @ts-ignore
-  dragStartCols(column) {
-    this.draggedColumn = column;
+  toggleSiteVisibility(site: Site) {
+    const updatedSites = this.sites().map(s => ({
+      ...s,
+      hidden: s.value === site.value ? !s.hidden : s.hidden,
+      default: s.default
+    }));
+
+    this.personalisationChanged.emit({
+      tableColumns: this.cols().map(col => ({ ...col })),
+      sites: updatedSites,
+      defaultSite: updatedSites.find(s => s.default)
+    });
+  }
+
+
+  dragStartCols(column: TableColumn) {
+    this.draggedColumn = column.field;
   }
 
   dragEndCols() {
     this.draggedColumn = null;
   }
 
+  shuffleCols(event: any, column: TableColumn) {
+    const updatedCols = this.cols().map(col => ({ ...col }));
 
-// @ts-ignore
-  shuffleCols(event, column) {
-    var draggedColumnOrder = this.draggedColumn.order;
-    var hoveredColumnOrder = column.order;
+    const dragged = updatedCols.find(col => col.field === this.draggedColumn);
+    const hovered = updatedCols.find(col => col.field === column.field);
 
-    this.cols().forEach(col => {
-      if (col === column && column !== this.draggedColumn) {
-        this.draggedColumn.order = hoveredColumnOrder;
-        col.order = hoveredColumnOrder < draggedColumnOrder ? hoveredColumnOrder + 1 : hoveredColumnOrder - 1;
-        this.cols().sort(this.compare);
-        this.cols().forEach((col, idx) => {
-          col.order = idx + 1;
-        })
-        return;
-      }
-    })
-  }
+    if (dragged && hovered && dragged.field !== hovered.field) {
+      const draggedOrder = dragged.order;
+      const hoveredOrder = hovered.order;
 
-  // @ts-ignore
-  toggleColumn(col) {
-    col.hidden = !col.hidden;
-  }
+      dragged.order = hoveredOrder;
+      hovered.order = hoveredOrder < draggedOrder ? hoveredOrder + 1 : hoveredOrder - 1;
 
-// @ts-ignore
-  compare(a, b) {
-    if (a.order < b.order) {
-      return -1;
+      updatedCols.sort((a, b) => a.order - b.order);
+      updatedCols.forEach((col, idx) => col.order = idx + 1);
+
+      this.personalisationChanged.emit({
+        tableColumns: updatedCols,
+        sites: this.sites().map(site => ({ ...site })),
+        defaultSite: this.sites().find(s => s.default)
+      });
     }
-    if (a.order > b.order) {
-      return 1;
-    }
-    return 0;
   }
+
 }

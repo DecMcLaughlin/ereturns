@@ -1,4 +1,4 @@
-import {Component, Input, Signal, TemplateRef, ViewChild} from '@angular/core';
+import {Component, computed, Input, Signal, TemplateRef, ViewChild} from '@angular/core';
 import {TableModule} from 'primeng/table';
 import {NgTemplateOutlet} from '@angular/common';
 import {FormsModule} from '@angular/forms';
@@ -25,6 +25,15 @@ import {TableColumn} from 'src/app/models/tableColumn';
 export class SmartTableComponent<T> {
   @Input({required: true}) data!: Signal<T[]>;
   @Input({required: true}) columns!: Signal<TableColumn<T>[]>;
+
+  readonly visibleColumns = computed(() =>
+    this.columns()
+      .filter(col => !col.hidden)
+      .sort((a, b) => a.order - b.order)
+  );
+
+  // Optional: computed for visible data if you want to filter client-side
+  readonly visibleData = computed(() => this.data());
 
 
   @ViewChild('textHeader', { static: true }) textHeader!: TemplateRef<any>;

@@ -6,6 +6,7 @@ import {catchError, of, tap} from 'rxjs';
 
 import {Paginator} from '../models/paginator';
 import {TableColumn} from 'src/app/models/tableColumn';
+import {Site} from 'src/app/models/site';
 
 
 type BulkDestructionState = {
@@ -14,8 +15,9 @@ type BulkDestructionState = {
     organizationId: number,
     includeApprovedCancelledClosed: boolean
   }
-  tableColumns?: TableColumn[];
+  tableColumns: TableColumn[];
   tableData?: any[];
+  sites: Site[]
 };
 
 const initialState: BulkDestructionState = {
@@ -28,6 +30,17 @@ const initialState: BulkDestructionState = {
     includeApprovedCancelledClosed: false
   },
 
+  sites: [{"name": "Craigavon", "value": 101, "hidden": false, "default": true}, {
+    "name": "Dundalk",
+    "value": 4665,
+    "hidden": false,
+    "default": false
+  }, {"name": "Durham", "value": 103, "hidden": false, "default": false}, {
+    "name": "Souderton",
+    "value": 102,
+    "hidden": false,
+    "default": false
+  }, {"name": "Singapore", "value": 1245, "hidden": false, "default": false}],
   tableColumns: [{
     "order": 1,
     "field": "drnNumber",
@@ -35,7 +48,7 @@ const initialState: BulkDestructionState = {
     "filterable": true,
     "prepopulatedFilter": null,
     "hidden": false,
-    "userHideable": false
+    "userHideable": false,
   }, {
     "order": 2,
     "field": "creationDate",
@@ -43,7 +56,8 @@ const initialState: BulkDestructionState = {
     "filterable": true,
     "prepopulatedFilter": null,
     "hidden": false,
-    "userHideable": true
+    "userHideable": true,
+    "type": 'date'
   }, {
     "order": 3,
     "field": "customer",
@@ -59,7 +73,8 @@ const initialState: BulkDestructionState = {
     "filterable": true,
     "prepopulatedFilter": null,
     "hidden": false,
-    "userHideable": true
+    "userHideable": true,
+    "type": 'select'
   }, {
     "order": 5,
     "field": "status",
@@ -67,7 +82,8 @@ const initialState: BulkDestructionState = {
     "filterable": true,
     "prepopulatedFilter": null,
     "hidden": false,
-    "userHideable": false
+    "userHideable": false,
+    "type": 'select',
   }, {
     "order": 6,
     "field": "raisedBy",
@@ -82,7 +98,7 @@ const initialState: BulkDestructionState = {
     "header": "Customer Approver",
     "filterable": true,
     "prepopulatedFilter": null,
-    "hidden": true,
+    "hidden": false,
     "userHideable": true
   }, {
     "order": 8,
@@ -90,7 +106,7 @@ const initialState: BulkDestructionState = {
     "header": "Almac Approver",
     "filterable": true,
     "prepopulatedFilter": null,
-    "hidden": true,
+    "hidden": false,
     "userHideable": true
   }],
 
@@ -118,11 +134,24 @@ export const BulkDestructionStore = signalStore(
         ),
     ),
 
-    updateTableColumns(updated: TableColumn[]) {
-      patchState(store, {tableColumns: updated});
-      console.log("Updated table columns:", updated);
-      // TODO: persist to backend here if needed
+    updatePersonalisation(personalisation: {
+      tableColumns: TableColumn[],
+      sites: Site[],
+      defaultSite?: Site
+    }) {
+
+      patchState(store, {
+        tableColumns: [...personalisation.tableColumns],
+        sites: [...personalisation.sites]
+      });
+
+
+      if (personalisation.defaultSite) {
+        // Trigger side effects like calling the DAB
+        const defaultSite = personalisation.defaultSite;
+      }
     }
+
 
   })),
   withHooks({
