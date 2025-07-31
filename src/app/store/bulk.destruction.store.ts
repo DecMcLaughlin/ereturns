@@ -154,17 +154,7 @@ export const BulkDestructionStore = signalStore(
       }
     },
 
-    // updateColumnFilter<T>(field: keyof T, value: any) {
-    //   patchState(store, {
-    //     tableColumns: store.tableColumns().map(col =>
-    //       col.field === field ? { ...col, prepopulatedFilter: { value } } : col
-    //     ),
-    //     filters: {
-    //       ...store.filters(),
-    //       [field as string]: [{ value, matchMode: 'equals' }]
-    //     }
-    //   });
-    // }
+
     updateColumnFilter<T>(field: keyof T, value: any) {
 
       console.log('Raw value received:', value);
@@ -221,10 +211,6 @@ export const BulkDestructionStore = signalStore(
         }
       });
     }
-
-
-
-
   })),
   withHooks({
     onInit(store) {

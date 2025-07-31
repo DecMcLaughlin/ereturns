@@ -1,5 +1,5 @@
 import {Component, computed, EventEmitter, Input, Output, Signal, TemplateRef, ViewChild} from '@angular/core';
-import {TableFilterEvent, TableModule} from 'primeng/table';
+import {TableModule} from 'primeng/table';
 import {NgTemplateOutlet} from '@angular/common';
 import {FormsModule} from '@angular/forms';
 import {MultiSelectModule } from 'primeng/multiselect';
