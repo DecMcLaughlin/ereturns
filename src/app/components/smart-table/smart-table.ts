@@ -1,13 +1,13 @@
-import {Component, computed, Input, Signal, TemplateRef, ViewChild} from '@angular/core';
-import {TableModule} from 'primeng/table';
+import {Component, computed, EventEmitter, Input, Output, Signal, TemplateRef, ViewChild} from '@angular/core';
+import {TableFilterEvent, TableModule} from 'primeng/table';
 import {NgTemplateOutlet} from '@angular/common';
 import {FormsModule} from '@angular/forms';
 import {MultiSelectModule } from 'primeng/multiselect';
 import {Tag} from 'primeng/tag';
 import {Select} from 'primeng/select';
 import {TableColumn} from 'src/app/models/tableColumn';
-
-
+import {FilterMetadata} from 'primeng/api';
+import {InputText} from 'primeng/inputtext';
 
 @Component({
   selector: 'app-smart-table',
@@ -19,12 +19,17 @@ import {TableColumn} from 'src/app/models/tableColumn';
     FormsModule,
     MultiSelectModule,
     Tag,
-    Select
+    Select,
+    InputText
   ]
 })
 export class SmartTableComponent<T> {
   @Input({required: true}) data!: Signal<T[]>;
   @Input({required: true}) columns!: Signal<TableColumn<T>[]>;
+  @Input({required: true}) filters!: Signal<{ [key: string]: FilterMetadata[] }>;
+
+  @Output() filterChanged = new EventEmitter<{ field: keyof T; value: any }>();
+
 
   readonly visibleColumns = computed(() =>
     this.columns()
@@ -32,14 +37,42 @@ export class SmartTableComponent<T> {
       .sort((a, b) => a.order - b.order)
   );
 
-  // Optional: computed for visible data if you want to filter client-side
-  readonly visibleData = computed(() => this.data());
+  readonly visibleData = computed(() => {
+    const filters = this.filters();
+    return this.data().filter(item => {
+      return Object.entries(filters).every(([field, conditions]) => {
+        return conditions.every(condition => {
+          const filterValue = condition.value;
+
+          // Skip empty filters
+          if (filterValue === null || filterValue === undefined || filterValue === '') {
+            return true;
+          }
+
+          const value = item[field as keyof T];
+          switch (condition.matchMode) {
+            case 'equals':
+              return value === filterValue;
+            case 'contains':
+              return String(value).toLowerCase().includes(String(filterValue).toLowerCase());
+            default:
+              return true;
+          }
+        });
+      });
+    });
+  });
+
 
 
   @ViewChild('textHeader', { static: true }) textHeader!: TemplateRef<any>;
   @ViewChild('selectHeader', { static: true }) selectHeader!: TemplateRef<any>;
   @ViewChild('dateHeader', { static: true }) dateHeader!: TemplateRef<any>;
 rows= 15
+
+  updateFilter(field: keyof T, value: any) {
+    this.filterChanged.emit({ field, value });
+  }
 
   getTemplate(type: string): TemplateRef<any> {
     switch (type) {
@@ -48,7 +81,6 @@ rows= 15
       case 'date': return this.dateHeader;
       default: return this.textHeader;
     }
-
   }
 
   getUniquePropertyOptions<K extends keyof T>(property: K): { label: string; value: T[K] }[] {
@@ -59,4 +91,24 @@ rows= 15
       value: value
     }));
   }
+
+
+  logAndEmit(field: keyof T, value: any) {
+    console.log('Emitting filterChanged:', field, value);
+    this.filterChanged.emit({ field, value });
+  }
+
+
+  textInputs: { [key: string]: string } = {};
+  private debounceTimers: { [key: string]: any } = {};
+
+  onTextInputDebounced(field: keyof T, value: string) {
+    clearTimeout(this.debounceTimers[field as string]);
+
+    this.debounceTimers[field as string] = setTimeout(() => {
+      this.logAndEmit(field, value);
+    }, 300); // 300ms debounce
+  }
+
+
 }

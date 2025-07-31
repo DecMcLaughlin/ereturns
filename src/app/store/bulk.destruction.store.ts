@@ -7,6 +7,7 @@ import {catchError, of, tap} from 'rxjs';
 import {Paginator} from '../models/paginator';
 import {TableColumn} from 'src/app/models/tableColumn';
 import {Site} from 'src/app/models/site';
+import { FilterMetadata } from 'primeng/api';
 
 
 type BulkDestructionState = {
@@ -17,6 +18,7 @@ type BulkDestructionState = {
   }
   tableColumns: TableColumn[];
   tableData?: any[];
+  filters: { [key: string]: FilterMetadata[] };
   sites: Site[]
 };
 
@@ -110,7 +112,7 @@ const initialState: BulkDestructionState = {
     "userHideable": true
   }],
 
-
+  filters: {},
   tableData: []
 };
 
@@ -150,7 +152,77 @@ export const BulkDestructionStore = signalStore(
         // Trigger side effects like calling the DAB
         const defaultSite = personalisation.defaultSite;
       }
+    },
+
+    // updateColumnFilter<T>(field: keyof T, value: any) {
+    //   patchState(store, {
+    //     tableColumns: store.tableColumns().map(col =>
+    //       col.field === field ? { ...col, prepopulatedFilter: { value } } : col
+    //     ),
+    //     filters: {
+    //       ...store.filters(),
+    //       [field as string]: [{ value, matchMode: 'equals' }]
+    //     }
+    //   });
+    // }
+    updateColumnFilter<T>(field: keyof T, value: any) {
+
+      console.log('Raw value received:', value);
+
+      const columns = store.tableColumns();
+      const col = columns.find(c => c.field === field);
+
+      if (!col) return;
+
+      let matchMode = 'equals';
+      let filterValue = value;
+
+      switch (col.type) {
+        case 'text':
+          matchMode = 'contains';
+          break;
+
+        case 'select':
+          matchMode = Array.isArray(value) ? 'in' : 'equals';
+          break;
+
+        case 'date':
+          matchMode = col.dateSearch ? 'between' : 'equals';
+
+          if (col.dateSearch && typeof value === 'string' && value.includes(',')) {
+            const [start, end] = value.split(',').map(v => v.trim());
+            filterValue = [start, end];
+          }
+          break;
+      }
+
+      const updatedColumns = columns.map(c =>
+        c.field === field
+          ? {
+            ...c,
+            prepopulatedFilter: { value: filterValue, matchMode }
+          }
+          : c
+      );
+
+      console.log('Patching state with:', {
+        tableColumns: updatedColumns,
+        filters: {
+          ...store.filters(),
+          [field as string]: [{ value: filterValue, matchMode }]
+        }
+      });
+
+      patchState(store, {
+        tableColumns: updatedColumns,
+        filters: {
+          ...store.filters(),
+          [field as string]: [{ value: filterValue, matchMode }]
+        }
+      });
     }
+
+
 
 
   })),

@@ -7,6 +7,8 @@ import {SelectButton} from 'primeng/selectbutton';
 import {FormsModule} from '@angular/forms';
 import {TableColumn} from 'src/app/models/tableColumn';
 import {Site} from 'src/app/models/site';
+import {BulkDestructionRequest} from 'src/app/models/bulkDestructionRequest';
+import {FilterChangedEvent} from 'src/app/models/filter-changed-event';
 
 @Component({
   selector: 'app-bulk-destruction-home',
@@ -23,16 +25,15 @@ import {Site} from 'src/app/models/site';
 export class BulkDestructionHome {
   store = inject(BulkDestructionStore);
   readonly tableData = computed(() => this.store.tableData?.() ?? []);
-  readonly tableColumns = computed(() => this.store.tableColumns?.() ?? []);
+  readonly tableColumns = computed(():TableColumn<BulkDestructionRequest>[] => this.store.tableColumns?.() ?? []);
   readonly sites = computed(() => this.store.sites?.() ?? []);
+  readonly filters = computed(() => this.store.filters?.() ?? {});
   readonly selectedSite = computed(() =>
     this.sites().find(site => site.default)
   );
   readonly visibleSites = computed(() =>
     this.sites().filter(site => !site.hidden)
   );
-
-
 
   constructor() {
   effect(() => {
@@ -49,4 +50,7 @@ export class BulkDestructionHome {
     this.store.updatePersonalisation(event);
   }
 
+  onFilterChanged(event: FilterChangedEvent<BulkDestructionRequest>) {
+    this.store.updateColumnFilter<BulkDestructionRequest>(event.field, event.value);
+  }
 }

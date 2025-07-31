@@ -2,9 +2,13 @@
   [cols]="tableColumns"
   [sites]="sites"
   (personalisationChanged)="updatePersonalisation($event)"
+
 />
 <p-selectButton [options]="visibleSites()" [ngModel]="selectedSite()" optionLabel="name"></p-selectButton>
 <app-smart-table
   [data]="tableData"
   [columns]="tableColumns"
+  [filters]="filters"
+  (filterChanged)="store.updateColumnFilter($event.field, $event.value)"
+
 />

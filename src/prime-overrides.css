@@ -53,3 +53,8 @@ p-columnfilterformelement > input {
 .p-datatable{
   overflow: auto !important;
 }
+.p-togglebutton.p-togglebutton-checked {
+  background-color:rgba(1, 114, 166, 1) !important;
+  border: 1px solid #f1f5f9 !important;
+  color: #ffffff !important;
+}

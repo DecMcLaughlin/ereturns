@@ -1,6 +1,6 @@
 export interface TableColumn<T = any> {
   order: number;
-  field: string;
+  field: keyof T;
   header: string;
   type?: 'text' | 'date' | 'select';
   userHideable?: boolean;

@@ -98,6 +98,16 @@ export class Personalise {
     });
   }
 
+  getFilterLabel(col: TableColumn<any>): string {
+    const filter = col.prepopulatedFilter?.value;
+    if (!filter) return '** Showing All **';
+
+    if (col.dateSearch) {
+      return filter.toString().replace(',', ' - ');
+    }
+
+    return filter.toString().replaceAll(',', ', ');
+  }
 
   dragStartCols(column: TableColumn) {
     this.draggedColumn = column.field;

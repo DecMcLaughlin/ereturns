@@ -117,22 +117,12 @@
           <h4
             class="whitespace-nowrap overflow-hidden text-ellipsis inline-block text-white px-2 rounded leading-8 break-words"
             [ngClass]="{
-          'bg-teal-600': col.prepopulatedFilter === null,
-          'bg-blue-700': col.prepopulatedFilter != null
+          'bg-teal-600': getFilterLabel(col) === '** Showing All **',
+          'bg-blue-700': getFilterLabel(col) != null
         }"
-            pTooltip="{{
-          col.prepopulatedFilter
-            ? col.prepopulatedFilter.value.toString().replaceAll(',', ', ')
-            : null
-        }}"
+            pTooltip="{{getFilterLabel(col)}}"
           >
-            {{
-              col.prepopulatedFilter && !col.dateSearch
-                ? col.prepopulatedFilter.value.toString().replaceAll(',', ', ')
-                : col.prepopulatedFilter && col.dateSearch
-                  ? col.prepopulatedFilter.value.toString().replace(',', ' - ')
-                  : '** Showing All **'
-            }}
+            {{getFilterLabel(col)}}
           </h4>
         </div>
       }
