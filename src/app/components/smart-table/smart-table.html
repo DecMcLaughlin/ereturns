@@ -46,19 +46,25 @@
       [showMenu]="false"
     >
       <ng-template pTemplate="filter" let-filter="filterCallback">
-        <div
-          (click)="$event.stopPropagation()"
-          (keydown)="$event.stopPropagation()"
-          (mousedown)="$event.stopPropagation()"
-        >
+        <div class="relative" (click)="$event.stopPropagation()">
           <input
             type="text"
             pInputText
-            class="w-full"
+            class="w-full pr-8"
             placeholder="Type to search"
             [(ngModel)]="textInputs[col.field]"
             (ngModelChange)="onTextInputDebounced(col.field, $event)"
           />
+          @if(textInputs[col.field]){
+            <button
+              type="button"
+              class="absolute right-2 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
+              (click)="clearTextFilter(col.field)"
+            >
+              ✕
+            </button>
+          }
+
         </div>
       </ng-template>
     </p-columnFilter>
@@ -91,6 +97,7 @@
       type="date"
       [field]="col.field"
       [showMenu]="false"
+
       placeholder="Pick a date"
       (click)="$event.stopPropagation()"
 

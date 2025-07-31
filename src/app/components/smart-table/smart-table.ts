@@ -1,4 +1,4 @@
-import {Component, computed, EventEmitter, Input, Output, Signal, TemplateRef, ViewChild} from '@angular/core';
+import {Component, computed, EventEmitter, Input, OnInit, Output, Signal, TemplateRef, ViewChild} from '@angular/core';
 import {TableModule} from 'primeng/table';
 import {NgTemplateOutlet} from '@angular/common';
 import {FormsModule} from '@angular/forms';
@@ -24,6 +24,7 @@ import {InputText} from 'primeng/inputtext';
   ]
 })
 export class SmartTableComponent<T> {
+
   @Input({required: true}) data!: Signal<T[]>;
   @Input({required: true}) columns!: Signal<TableColumn<T>[]>;
   @Input({required: true}) filters!: Signal<{ [key: string]: FilterMetadata[] }>;
@@ -50,12 +51,17 @@ export class SmartTableComponent<T> {
           }
 
           const value = item[field as keyof T];
+
           switch (condition.matchMode) {
             case 'equals':
               return value === filterValue;
+
             case 'contains':
-              return String(value).toLowerCase().includes(String(filterValue).toLowerCase());
+              return value != null &&
+                String(value).toLowerCase().includes(String(filterValue).toLowerCase());
+
             default:
+              console.warn(`Unhandled matchMode: ${condition.matchMode}`, { field, value, filterValue });
               return true;
           }
         });
@@ -69,6 +75,7 @@ export class SmartTableComponent<T> {
   @ViewChild('selectHeader', { static: true }) selectHeader!: TemplateRef<any>;
   @ViewChild('dateHeader', { static: true }) dateHeader!: TemplateRef<any>;
 rows= 15
+
 
   updateFilter(field: keyof T, value: any) {
     this.filterChanged.emit({ field, value });
@@ -92,6 +99,11 @@ rows= 15
     }));
   }
 
+
+  clearTextFilter(field: keyof T) {
+    this.textInputs[field as string] = '';
+    this.onTextInputDebounced(field, '');
+  }
 
   logAndEmit(field: keyof T, value: any) {
     console.log('Emitting filterChanged:', field, value);

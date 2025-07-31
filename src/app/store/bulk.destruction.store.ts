@@ -156,7 +156,6 @@ export const BulkDestructionStore = signalStore(
 
 
     updateColumnFilter<T>(field: keyof T, value: any) {
-
       console.log('Raw value received:', value);
 
       const columns = store.tableColumns();
@@ -164,10 +163,13 @@ export const BulkDestructionStore = signalStore(
 
       if (!col) return;
 
-      let matchMode = 'equals';
+      // Default to 'text' if type is missing
+      const type = col.type ?? 'text';
+
+      let matchMode: string;
       let filterValue = value;
 
-      switch (col.type) {
+      switch (type) {
         case 'text':
           matchMode = 'contains';
           break;
@@ -184,6 +186,9 @@ export const BulkDestructionStore = signalStore(
             filterValue = [start, end];
           }
           break;
+
+        default:
+          matchMode = 'contains'; // Fallback for unknown types
       }
 
       const updatedColumns = columns.map(c =>
@@ -211,6 +216,7 @@ export const BulkDestructionStore = signalStore(
         }
       });
     }
+
   })),
   withHooks({
     onInit(store) {
