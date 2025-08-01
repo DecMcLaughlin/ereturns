@@ -1,6 +1,5 @@
 import { patchState } from '@ngrx/signals';
 import { TableColumn } from 'src/app/models/tableColumn';
-import { FilterMetadata } from 'primeng/api';
 import { Site } from 'src/app/models/site';
 
 export function applyPrepopulatedFilters<T>(

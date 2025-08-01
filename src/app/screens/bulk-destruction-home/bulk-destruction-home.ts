@@ -8,7 +8,6 @@ import {FormsModule} from '@angular/forms';
 import {TableColumn} from 'src/app/models/tableColumn';
 import {Site} from 'src/app/models/site';
 import {BulkDestructionRequest} from 'src/app/models/bulkDestructionRequest';
-import {FilterChangedEvent} from 'src/app/models/filter-changed-event';
 
 @Component({
   selector: 'app-bulk-destruction-home',

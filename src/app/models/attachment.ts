@@ -1,4 +1,3 @@
-import { MenuItem } from 'primeng/api';
 
 export interface Attachment {
   uuid?: string;
