@@ -50,7 +50,9 @@ export class BulkDestructionHome {
     this.store.updatePersonalisation(event);
   }
 
-  onFilterChanged(event: FilterChangedEvent<BulkDestructionRequest>) {
-    this.store.updateColumnFilter<BulkDestructionRequest>(event.field, event.value);
-  }
+
+  getRowClass = (row: any) => {
+    return row.partialLots === 'Yes' ? '!bg-[#f0a170]' : '';
+
+  };
 }

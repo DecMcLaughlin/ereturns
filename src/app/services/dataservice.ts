@@ -20,4 +20,10 @@ private http = inject(HttpClient);
   getBulkDestructionRequestsByOrganizationId(organizationId: number, includeApprovedCancelledClosed: boolean, paginator: Paginator) {
     return this.http.post(`${baseUrl}bulk-destruction/search?organizationId=${organizationId}&includeApprovedCancelledClosed=${includeApprovedCancelledClosed}`, paginator);
   }
+  getDiscrepanciesByOrganizationId(organizationId: number, includeClosed: boolean, paginator: Paginator) {
+    return this.http.post(`${baseUrl}discrepancy/search?organizationId=${organizationId}&includeClosed=${includeClosed}`, paginator);
+  }
+  getReturnsDestructionRequestsByOrganizationId(organizationId: number, includeApprovedCancelledClosed: boolean, paginator: Paginator) {
+    return this.http.post(`${baseUrl}returns-destruction/search?organizationId=${organizationId}&includeApprovedCancelledClosed=${includeApprovedCancelledClosed}`, paginator);
+  }
 }

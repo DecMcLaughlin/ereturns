@@ -1,1 +1,16 @@
-<p>returns-home works!</p>
+<app-personalise
+  [cols]="tableColumns"
+  [sites]="sites"
+  (personalisationChanged)="updatePersonalisation($event)"
+
+/>
+<div class="w-full bg-white">
+  <p-selectButton  class="!border-0" [options]="visibleSites()" [ngModel]="selectedSite()" optionLabel="name"></p-selectButton>
+</div>
+<app-smart-table
+  [data]="tableData"
+  [columns]="tableColumns"
+  [filters]="filters"
+  (filterChanged)="store.updateColumnFilter($event.field, $event.value)"
+
+/>

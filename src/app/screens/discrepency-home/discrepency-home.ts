@@ -1,137 +1,45 @@
-import {Component, OnInit} from '@angular/core';
-import {NgClass} from '@angular/common';
+import {Component, computed, inject} from '@angular/core';
+import {ReturnsDiscrepanciesStore} from 'src/app/store/returns.discrepancies.store'
+import {TableColumn} from 'src/app/models/tableColumn';
+import {BulkDestructionRequest} from 'src/app/models/bulkDestructionRequest';
+import {SmartTableComponent} from 'src/app/components/smart-table/smart-table';
+import {SelectButton} from 'primeng/selectbutton';
+import {Personalise} from 'src/app/components/personalise/personalise';
+import {Site} from 'src/app/models/site';
 import {FormsModule} from '@angular/forms';
-import {Tooltip} from 'primeng/tooltip';
-import {Draggable, Droppable} from 'primeng/dragdrop';
 
 @Component({
   selector: 'app-discrepency-home',
   imports: [
-    NgClass,
-    FormsModule,
-    Tooltip,
-    Draggable,
-    Droppable
+    SmartTableComponent,
+    SelectButton,
+    Personalise,
+    FormsModule
 
   ],
   templateUrl: './discrepency-home.html',
-  styleUrl: './discrepency-home.css'
+  styleUrl: './discrepency-home.css',
+  providers: [ReturnsDiscrepanciesStore]
 })
-export class DiscrepencyHome implements OnInit {
-  cols: any[] = [];
-  draggedColumn: any = null;
+export class DiscrepencyHome  {
+  store = inject(ReturnsDiscrepanciesStore);
+  readonly tableData = computed(() => this.store.tableData?.() ?? []);
+  readonly tableColumns = computed(():TableColumn<BulkDestructionRequest>[] => this.store.tableColumns?.() ?? []);
+  readonly sites = computed(() => this.store.sites?.() ?? []);
+  readonly filters = computed(() => this.store.filters?.() ?? {});
+  readonly selectedSite = computed(() =>
+    this.sites().find(site => site.default)
+  );
+  readonly visibleSites = computed(() =>
+    this.sites().filter(site => !site.hidden)
+  );
 
-  ngOnInit(): void {
-    this.cols = [{
-      "order": 1,
-      "field": "drnNumber",
-      "header": "DRN No.",
-      "filterable": true,
-      "prepopulatedFilter": null,
-      "hidden": false,
-      "userHideable": false
-    }, {
-      "order": 2,
-      "field": "creationDate",
-      "header": "Date Raised",
-      "filterable": true,
-      "isDate": true,
-      "prepopulatedFilter": null,
-      "hidden": false,
-      "userHideable": true
-    }, {
-      "order": 3,
-      "field": "customer",
-      "header": "Customer",
-      "filterable": true,
-      "prepopulatedFilter": null,
-      "hidden": false,
-      "userHideable": true
-    }, {
-      "order": 4,
-      "field": "partialLots",
-      "header": "Partial Lots",
-      "filterable": true,
-      "prepopulatedFilter": null,
-      "hidden": false,
-      "userHideable": true
-    }, {
-      "order": 5,
-      "field": "status",
-      "header": "Status",
-      "filterable": true,
-      "prepopulatedFilter": null,
-      "hidden": false,
-      "userHideable": false
-    }, {
-      "order": 6,
-      "field": "raisedBy",
-      "header": "Raised By",
-      "filterable": true,
-      "prepopulatedFilter": null,
-      "hidden": false,
-      "userHideable": true
-    }, {
-      "order": 7,
-      "field": "customerApprover",
-      "header": "Customer Approver",
-      "filterable": true,
-      "prepopulatedFilter": null,
-      "hidden": true,
-      "userHideable": true
-    }, {
-      "order": 8,
-      "field": "almacApprover",
-      "header": "Almac Approver",
-      "filterable": true,
-      "prepopulatedFilter": null,
-      "hidden": true,
-      "userHideable": true
-    }];
-
-  }
-
-// @ts-ignore
-  dragStartCols(column) {
-    this.draggedColumn = column;
-  }
-
-  dragEndCols() {
-    this.draggedColumn = null;
-  }
-
-
-// @ts-ignore
-  shuffleCols(event, column) {
-    var draggedColumnOrder = this.draggedColumn.order;
-    var hoveredColumnOrder = column.order;
-
-    this.cols.forEach(col => {
-      if (col === column && column !== this.draggedColumn) {
-        this.draggedColumn.order = hoveredColumnOrder;
-        col.order = hoveredColumnOrder < draggedColumnOrder ? hoveredColumnOrder + 1 : hoveredColumnOrder - 1;
-        this.cols.sort(this.compare);
-        this.cols.forEach((col, idx) => {
-          col.order = idx + 1;
-        })
-        return;
-      }
-    })
-  }
-
-  // @ts-ignore
-  toggleColumn(col) {
-    col.hidden = !col.hidden;
-  }
-
-// @ts-ignore
-  compare(a, b) {
-    if (a.order < b.order) {
-      return -1;
-    }
-    if (a.order > b.order) {
-      return 1;
-    }
-    return 0;
+  updatePersonalisation(event: {
+    tableColumns: TableColumn[],
+    sites: Site[],
+    defaultSite?: Site
+  }) {
+    console.log('Received personalisation update', event);
+    this.store.updatePersonalisation(event);
   }
 }

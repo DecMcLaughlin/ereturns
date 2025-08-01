@@ -14,7 +14,7 @@ import { TableColumn } from 'src/app/models/tableColumn';
 import { Site } from 'src/app/models/site';
 import { FilterMetadata } from 'primeng/api';
 import {
-  DEFAULT_BULK_TABLE_COLUMNS,
+  DEFAULT_DISCREPANCY_TABLE_COLUMNS,
   DEFAULT_SITES,
 } from 'src/app/constants/defaults.config';
 import {
@@ -23,7 +23,7 @@ import {
   updatePersonalisation,
 } from 'src/app/utils/store-utils';
 
-type BulkDestructionState = {
+type ReturnsDiscrepanciesState = {
   params: {
     paginator: Paginator;
     organizationId: number;
@@ -35,7 +35,7 @@ type BulkDestructionState = {
   sites: Site[];
 };
 
-const initialState: BulkDestructionState = {
+const initialState: ReturnsDiscrepanciesState = {
   params: {
     paginator: {
       from: 1,
@@ -45,30 +45,30 @@ const initialState: BulkDestructionState = {
     includeApprovedCancelledClosed: false,
   },
   sites: DEFAULT_SITES,
-  tableColumns: DEFAULT_BULK_TABLE_COLUMNS,
+  tableColumns: DEFAULT_DISCREPANCY_TABLE_COLUMNS,
   filters: {},
   tableData: [],
 };
 
-export const BulkDestructionStore = signalStore(
+export const ReturnsDiscrepanciesStore = signalStore(
   withState(initialState),
   withMethods((store, dataService = inject(Dataservice)) => {
     const updateColumnFilterFn = <T>(field: keyof T, value: any) =>
       updateColumnFilter<T>(store, field, value);
 
     return {
-      getBulkDestructionRequests: rxMethod<void>(() =>
+      getDiscrepanciesByOrganizationId: rxMethod<void>(() =>
         dataService
-          .getBulkDestructionRequestsByOrganizationId(
+          .getDiscrepanciesByOrganizationId(
             store.params.organizationId(),
             store.params.includeApprovedCancelledClosed(),
             store.params.paginator()
           )
           .pipe(
-            map((ro: any) => ro.data.bulkDestructionRequests),
+            map((ro: any) => ro.data.discrepancies),
             tap((data) => patchState(store, { tableData: data })),
             catchError((err) => {
-              console.log('Failed to retrieve bulk destruction requests', err);
+              console.log('Failed to retrieve discrepancies', err);
               return of();
             })
           )
@@ -85,7 +85,7 @@ export const BulkDestructionStore = signalStore(
   }),
   withHooks({
     onInit(store) {
-      store.getBulkDestructionRequests();
+      store.getDiscrepanciesByOrganizationId();
       store.applyPrepopulatedFilters<any>();
     },
   })

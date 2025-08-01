@@ -5,25 +5,22 @@ import {
   withMethods,
   withState,
 } from '@ngrx/signals';
-import { inject } from '@angular/core';
-import { Dataservice } from 'src/app/services/dataservice';
-import { rxMethod } from '@ngrx/signals/rxjs-interop';
-import { catchError, of, tap, map } from 'rxjs';
-import { Paginator } from '../models/paginator';
-import { TableColumn } from 'src/app/models/tableColumn';
-import { Site } from 'src/app/models/site';
-import { FilterMetadata } from 'primeng/api';
+import {inject} from '@angular/core';
+import {Dataservice} from 'src/app/services/dataservice';
+import {rxMethod} from '@ngrx/signals/rxjs-interop';
+import {catchError, of, tap, map} from 'rxjs';
+import {Paginator} from '../models/paginator';
+import {TableColumn} from 'src/app/models/tableColumn';
+import {Site} from 'src/app/models/site';
+import {FilterMetadata} from 'primeng/api';
 import {
-  DEFAULT_BULK_TABLE_COLUMNS,
+  DEFAULT_RETURNS_TABLE_COLUMNS,
   DEFAULT_SITES,
 } from 'src/app/constants/defaults.config';
-import {
-  applyPrepopulatedFilters,
-  updateColumnFilter,
-  updatePersonalisation,
-} from 'src/app/utils/store-utils';
+import {applyPrepopulatedFilters, updateColumnFilter, updatePersonalisation} from 'src/app/utils/store-utils';
 
-type BulkDestructionState = {
+
+type ReturnsDestructionState = {
   params: {
     paginator: Paginator;
     organizationId: number;
@@ -35,7 +32,7 @@ type BulkDestructionState = {
   sites: Site[];
 };
 
-const initialState: BulkDestructionState = {
+const initialState: ReturnsDestructionState = {
   params: {
     paginator: {
       from: 1,
@@ -45,47 +42,51 @@ const initialState: BulkDestructionState = {
     includeApprovedCancelledClosed: false,
   },
   sites: DEFAULT_SITES,
-  tableColumns: DEFAULT_BULK_TABLE_COLUMNS,
+  tableColumns: DEFAULT_RETURNS_TABLE_COLUMNS,
   filters: {},
   tableData: [],
 };
 
-export const BulkDestructionStore = signalStore(
+export const ReturnsDestructionStore = signalStore(
   withState(initialState),
   withMethods((store, dataService = inject(Dataservice)) => {
     const updateColumnFilterFn = <T>(field: keyof T, value: any) =>
       updateColumnFilter<T>(store, field, value);
 
     return {
-      getBulkDestructionRequests: rxMethod<void>(() =>
+      getReturnsByOrganizationId: rxMethod<void>(() =>
         dataService
-          .getBulkDestructionRequestsByOrganizationId(
+          .getReturnsDestructionRequestsByOrganizationId(
             store.params.organizationId(),
             store.params.includeApprovedCancelledClosed(),
             store.params.paginator()
           )
           .pipe(
-            map((ro: any) => ro.data.bulkDestructionRequests),
-            tap((data) => patchState(store, { tableData: data })),
+            map((ro: any) => ro.data.returnsDestructionRequests),
+            tap((data) => patchState(store, {tableData: data})),
             catchError((err) => {
-              console.log('Failed to retrieve bulk destruction requests', err);
+              console.log('Failed to retrieve returns destruction requests', err);
               return of();
             })
           )
       ),
+
       updatePersonalisation: (p: {
         tableColumns: TableColumn[];
         sites: Site[];
-        defaultSite?: Site;
+        defaultSite?: Site
       }) => updatePersonalisation(store, p),
+
       updateColumnFilter: updateColumnFilterFn,
+
       applyPrepopulatedFilters: <T>() =>
         applyPrepopulatedFilters<T>(store, updateColumnFilterFn),
     };
   }),
+
   withHooks({
     onInit(store) {
-      store.getBulkDestructionRequests();
+      store.getReturnsByOrganizationId();
       store.applyPrepopulatedFilters<any>();
     },
   })

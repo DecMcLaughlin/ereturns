@@ -4,11 +4,14 @@
   (personalisationChanged)="updatePersonalisation($event)"
 
 />
-<p-selectButton [options]="visibleSites()" [ngModel]="selectedSite()" optionLabel="name"></p-selectButton>
+<div class="w-full bg-white">
+  <p-selectButton  class="!border-0" [options]="visibleSites()" [ngModel]="selectedSite()" optionLabel="name"></p-selectButton>
+</div>
 <app-smart-table
   [data]="tableData"
   [columns]="tableColumns"
   [filters]="filters"
+  [rowStyleClass]="getRowClass"
   (filterChanged)="store.updateColumnFilter($event.field, $event.value)"
 
 />

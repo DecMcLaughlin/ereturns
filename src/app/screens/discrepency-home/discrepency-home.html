@@ -1,57 +1,16 @@
-<div class="grid grid-cols-6 gap-4 my-8">
-  @for (col of cols; track col.order) {
-    <div
-      pDraggable
-      pDroppable
-      [pDroppableDisabled]="draggedColumn === col"
-      (onDragStart)="dragStartCols(col)"
-      (onDragEnd)="dragEndCols()"
-      (onDrop)="shuffleCols($event, col)"
-      class="w-full p-2 rounded bg-opacity-30"
-      [ngClass]="{
-        'bg-red-400': col.hidden,
-        'bg-teal-600': !col.hidden
-      }"
-    >
-      <div class="mb-2 flex items-center justify-between">
-        <div class="flex w-[90%] items-center">
-          @if (col.userHideable) {
-            <input
-              type="checkbox"
-              class="mr-2 cursor-pointer w-5 h-5"
-              [checked]="!col.hidden"
-              (change)="toggleColumn(col)"
-            />
-          }
-          <h3 class="whitespace-nowrap font-semibold">
-            {{ col.order }}. {{ col.header }}
-          </h3>
-        </div>
-        @if (!col.hidden) {
-          <i class="pi pi-ellipsis-h cursor-grab"></i>
-        }
-      </div>
+<app-personalise
+  [cols]="tableColumns"
+  [sites]="sites"
+  (personalisationChanged)="updatePersonalisation($event)"
 
-      <h4
-        class="whitespace-nowrap overflow-hidden text-ellipsis inline-block text-white px-2 rounded leading-8 break-words"
-        [ngClass]="{
-          'bg-teal-600': col.prepopulatedFilter === null,
-          'bg-blue-700': col.prepopulatedFilter != null
-        }"
-        pTooltip="{{
-          col.prepopulatedFilter
-            ? col.prepopulatedFilter.value.toString().replaceAll(',', ', ')
-            : null
-        }}"
-      >
-        {{
-          col.prepopulatedFilter && !col.dateSearch
-            ? col.prepopulatedFilter.value.toString().replaceAll(',', ', ')
-            : col.prepopulatedFilter && col.dateSearch
-              ? col.prepopulatedFilter.value.toString().replace(',', ' - ')
-              : '** Showing All **'
-        }}
-      </h4>
-    </div>
-  }
+/>
+<div class="w-full bg-white">
+  <p-selectButton  class="!border-0" [options]="visibleSites()" [ngModel]="selectedSite()" optionLabel="name"></p-selectButton>
 </div>
+<app-smart-table
+  [data]="tableData"
+  [columns]="tableColumns"
+  [filters]="filters"
+  (filterChanged)="store.updateColumnFilter($event.field, $event.value)"
+
+/>

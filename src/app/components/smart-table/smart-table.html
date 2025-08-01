@@ -12,7 +12,7 @@
     <tr class="text-[1.4rem]">
       @for (col of columns; track col.field) {
         @if (!col.hidden) {
-          <th pSortableColumn="{{ col.field }}" class="text-left !bg-[#0172A6FF] !text-white">
+          <th pSortableColumn="{{ col.field }}" class="text-left !bg-[#0172A6FF] !text-white whitespace-nowrap">
             <div class="flex flex-col gap-1 w-full">
               <!-- Header and Sort Icon -->
               <div class="flex items-center gap-2">
@@ -30,10 +30,22 @@
   </ng-template>
 
   <ng-template pTemplate="body" let-rowData let-columns="columns">
-    <tr class="hover:bg-gray-50 text-[1.4rem]">
+    <tr class="hover:bg-gray-50 text-[1.4rem]"
+        [ngClass]="rowStyleClass ? rowStyleClass(rowData) : ''">
       @for (col of columns; track col.field) {
         @if (!col.hidden) {
-          <td class="px-4 py-2 text-gray-800">{{ rowData[col.field] }}</td>
+          <td class="px-4 py-2 text-gray-800 whitespace-nowrap">
+            @if (col.field === 'status') {
+
+              <span class="flex justify-center items-center w-full h-[22px] rounded-full  text-sm font-medium" [ngClass]="getStatusClass(rowData[col.field])">
+              {{ rowData[col.field] }}
+            </span>
+
+            } @else {
+              {{ rowData[col.field] }}
+            }
+
+          </td>
         }
       }
     </tr>

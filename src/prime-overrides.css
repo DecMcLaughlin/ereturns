@@ -58,3 +58,8 @@ p-columnfilterformelement > input {
   border: 1px solid #f1f5f9 !important;
   color: #ffffff !important;
 }
+
+.p-selectbutton .p-togglebutton {
+  border-radius: 0 !important;
+  border-width: 0 !important;
+}

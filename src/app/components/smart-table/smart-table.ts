@@ -1,6 +1,6 @@
 import {Component, computed, EventEmitter, Input, OnInit, Output, Signal, TemplateRef, ViewChild} from '@angular/core';
 import {TableModule} from 'primeng/table';
-import {NgTemplateOutlet} from '@angular/common';
+import {NgClass, NgTemplateOutlet} from '@angular/common';
 import {FormsModule} from '@angular/forms';
 import {MultiSelectModule } from 'primeng/multiselect';
 import {Tag} from 'primeng/tag';
@@ -20,7 +20,8 @@ import {InputText} from 'primeng/inputtext';
     MultiSelectModule,
     Tag,
     Select,
-    InputText
+    InputText,
+    NgClass
   ]
 })
 export class SmartTableComponent<T> {
@@ -28,7 +29,7 @@ export class SmartTableComponent<T> {
   @Input({required: true}) data!: Signal<T[]>;
   @Input({required: true}) columns!: Signal<TableColumn<T>[]>;
   @Input({required: true}) filters!: Signal<{ [key: string]: FilterMetadata[] }>;
-
+  @Input() rowStyleClass?: (row: T) => string;
   @Output() filterChanged = new EventEmitter<{ field: keyof T; value: any }>();
 
 
@@ -121,6 +122,29 @@ rows= 15
       this.logAndEmit(field, value);
     }, 300); // 300ms debounce
   }
-
-
+  getStatusClass(status: string): string {
+    console.log('Determining severity for status:', status);
+    switch (status) {
+      case 'Draft':
+        return "bg-[rgba(238,238,238,0.85)] text-[#637383]";
+      case 'Awaiting Response':
+      case 'Awaiting Followup Response':
+        return "bg-[#f2f7f6] text-[#01A688]";
+      case 'On Hold - Partial Lots':
+      case 'On Hold - Quote' :
+      case 'Pending Customer Feedback':
+      case 'Pending Customer Internal Approval':
+        return "bg-[#faf3ef] text-[#f0a170]";
+      case 'Customer Approved':
+      case 'Customer Response Received':
+        return "bg-[#f2f7f6] text-[#01A688]";
+      case'Almac Approved' :
+      case 'Cancelled':
+      case 'Closed':
+      case 'Closed - Retained':
+        return "bg-[#f4f6fa] text-[#0172A6]";
+      default:
+        return "bg-[rgba(238,238,238,0.85)] text-[#637383]";
+    }
+  }
 }
